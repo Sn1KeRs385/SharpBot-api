@@ -24,5 +24,7 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     '@typescript-eslint/no-var-requires': 'off',
+    'object-property-newline': 'error',
+    'object-curly-newline': 'error',
   },
 }

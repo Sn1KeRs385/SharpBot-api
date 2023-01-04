@@ -1,5 +1,5 @@
-import dotenv from 'dotenv'
-import { startMainBot } from './modules/telegram-bot'
+require('dotenv').config()
 
-dotenv.config()
+import { startMainBot } from '~apps/telegram-bot'
+
 startMainBot()

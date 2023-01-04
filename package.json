@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "repository": "https://github.com/Sn1KeRs385/SharpBot-api.git",
   "author": "Stefanko Dmitriy <dima.385@mail.ru>",
+  "main": "src/app.ts",
   "license": "MIT",
   "scripts": {
     "dev": "ts-node src/app.ts",
@@ -11,7 +12,9 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "node-telegram-bot-api": "^0.60.0"
+    "knex": "^2.3.0",
+    "node-telegram-bot-api": "^0.60.0",
+    "pg": "^8.8.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
@@ -23,6 +26,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.1",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.1",
     "typescript": "^4.9.4"
   }
 }

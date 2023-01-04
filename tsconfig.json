@@ -4,9 +4,23 @@
     "esModuleInterop": true,
     "target": "es6",
     "moduleResolution": "node",
-    "rootDir": "src",
+    "rootDir": "./",
     "outDir": "dist",
-    "strict": true
+    "strict": true,
+
+    "baseUrl": "src",
+    "paths": {
+      "~*": ["*"]
+    }
   },
-  "lib": ["es2015"]
+  "lib": ["es2015"],
+  "include": [
+    "src/**/*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }
