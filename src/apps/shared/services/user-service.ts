@@ -1,5 +1,5 @@
 import UserIdentifier from '~apps/shared/enums/user-identifier'
-import DB from '~apps/shared/utils/database'
+import DB from '~apps/shared/infrastructure/database'
 import * as UserRepository from '~apps/shared/repositories/user-repository'
 import User from '~apps/shared/interfaces/user'
 import UserIdentifierSearch from '~apps/shared/interfaces/user-identifier-search'

@@ -11,6 +11,9 @@ namespace NodeJS {
     DB_PG_USER?: string;
     DB_PG_PASSWORD?: string;
 
+    REDIS_HOST?: string;
+    REDIS_PORT?: string;
+
     TELEGRAM_BOT_API_KEY: string;
   }
 }

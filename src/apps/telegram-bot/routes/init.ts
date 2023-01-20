@@ -1,10 +1,10 @@
 import StartAction from '~apps/telegram-bot/actions/init/start-action'
-import WithUser from '~apps/telegram-bot/middlewares/with-user'
 
 export default [
   {
-    route: /\/start/,
+    name: 'InitStart',
+    path: '/start',
     action: StartAction,
-    middlewares: [WithUser],
+    middlewares: [],
   },
 ]

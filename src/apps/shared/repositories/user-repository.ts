@@ -1,5 +1,5 @@
 import UserIdentifier from '~apps/shared/enums/user-identifier'
-import DB from '~apps/shared/utils/database'
+import DB from '~apps/shared/infrastructure/database'
 import User from '~apps/shared/interfaces/user'
 import UserIdentifierSearch from '~apps/shared/interfaces/user-identifier-search'
 import UserWithIdentifier from '~apps/shared/interfaces/user-with-identifier'
@@ -12,6 +12,8 @@ export const findByIdentifier = async (type: UserIdentifier, value: string) => {
     .select('u.*')
     .where('ui.type', type)
     .where('ui.value', value)
+    .whereNull('u.deleted_at')
+    .whereNull('ui.deleted_at')
     .first()
 }
 
@@ -23,11 +25,14 @@ export const findByIdentifiers = async (
       this.on('ui.user_id', '=', 'u.id')
     })
     .select('u.*', 'ui.type as identifier_type', 'ui.value as identifier_value')
+    .whereNull('u.deleted_at')
+    .whereNull('ui.deleted_at')
 
   userIdentifiers.forEach((userIdentifier) => {
     query.orWhere((builder) => {
-      builder.where('ui.type', userIdentifier.type)
-      builder.where('ui.value', userIdentifier.value)
+      builder
+        .where('ui.type', userIdentifier.type)
+        .where('ui.value', userIdentifier.value)
     })
   })
 

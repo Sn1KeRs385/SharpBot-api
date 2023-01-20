@@ -8,12 +8,8 @@ export default async (app: AppContainer) => {
         inline_keyboard: [
           [
             {
-              text: 'Button 1',
-              callback_data: 'button 1',
-            },
-            {
-              text: 'Button 2',
-              callback_data: 'button 2',
+              text: 'Управления ботами',
+              callback_data: '/bots',
             },
           ],
         ],

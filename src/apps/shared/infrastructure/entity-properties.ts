@@ -1,4 +1,4 @@
-import { getCurrentTimestamp } from '~apps/shared/utils/date'
+import { getCurrentTimestamp } from '~apps/shared/infrastructure/date'
 
 export const timestampsOnCreate = () => {
   return {

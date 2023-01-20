@@ -1,7 +1,6 @@
 import * as UserService from '~apps/shared/services/user-service'
 import UserIdentifier from '~apps/shared/enums/user-identifier'
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
-import UserNotFoundError from '~apps/telegram-bot/errors/user-not-found-error'
 import UserIdentifierSearch from '~apps/shared/interfaces/user-identifier-search'
 
 export default async (app: AppContainer) => {

@@ -3,12 +3,15 @@ import {
   handleCallbackQuery,
   handleText,
 } from '~apps/telegram-bot/infrastructure/action-handler'
+import { initRoutes } from '~apps/telegram-bot/routes'
 
 export const startMainBot = () => {
   const botApiKey = process.env.TELEGRAM_BOT_API_KEY
   if (!botApiKey) {
     throw Error('Bot api key is not set')
   }
+
+  initRoutes()
 
   const bot = new TelegramBot(botApiKey, { polling: true })
   bot.onText(/.*/, async (message: Message) => {

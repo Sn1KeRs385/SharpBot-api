@@ -1,5 +1,5 @@
 import { Knex } from 'knex'
-import DB from '~apps/shared/utils/database'
+import DB from '~apps/shared/infrastructure/database'
 import CreateTableBuilder = Knex.CreateTableBuilder
 
 export default (table: CreateTableBuilder) => {
