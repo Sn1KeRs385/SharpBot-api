@@ -1,7 +1,7 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 
-export default class BaseTelegramBotError extends Error {
-  constructor(message?: string) {
+export default abstract class BaseTelegramBotError extends Error {
+  protected constructor(message?: string) {
     super(message)
 
     Object.setPrototypeOf(this, BaseTelegramBotError.prototype)
@@ -14,6 +14,6 @@ export default class BaseTelegramBotError extends Error {
   public async sendMessageToUser(app: AppContainer) {
     await app
       .getBot()
-      .sendMessage(app.getMessage().chat.id, this.getUserMessage())
+      .sendMessage(app.getRequest().getChatId(), this.getUserMessage())
   }
 }

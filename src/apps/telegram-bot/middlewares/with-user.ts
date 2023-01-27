@@ -4,17 +4,17 @@ import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import UserIdentifierSearch from '~apps/shared/interfaces/user-identifier-search'
 
 export default async (app: AppContainer) => {
-  const message = app.getMessage()
+  const message = app.getRequest().getMessage()
 
   const identifiers: UserIdentifierSearch[] = []
 
-  if (message.from?.id) {
+  if (message?.from?.id) {
     identifiers.push({
       type: UserIdentifier.TG_USER_ID,
       value: message.from.id.toString(),
     })
   }
-  if (message.chat.type === 'private') {
+  if (message?.chat.type === 'private') {
     identifiers.push({
       type: UserIdentifier.TG_CHAT_ID,
       value: message.chat.id.toString(),

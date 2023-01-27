@@ -2,13 +2,13 @@ import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import { getRouteByName } from '~apps/telegram-bot/routes'
 
 export default async (app: AppContainer) => {
-  const nexRoute = getRouteByName('BotsAddByApiKey')
-  app.getState().setNextRoutePath(nexRoute.path)
+  const nextRoute = getRouteByName('BotsAddByApiKey')
+  app.getState().setNextRoutePath(nextRoute.path)
 
   await app
     .getBot()
     .sendMessage(
-      app.getMessage().chat.id,
+      app.getRequest().getChatId(),
       'Введите ключ от бота в следующем сообщении'
     )
 }

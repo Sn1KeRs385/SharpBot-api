@@ -3,7 +3,7 @@ import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 export default async (app: AppContainer) => {
   await app
     .getBot()
-    .sendMessage(app.getMessage().chat.id, 'Выберите пункт меню', {
+    .sendMessage(app.getRequest().getChatId(), 'Выберите пункт меню', {
       reply_markup: {
         inline_keyboard: [
           [

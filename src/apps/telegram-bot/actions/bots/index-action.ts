@@ -1,12 +1,25 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import { getRouteByName } from '~apps/telegram-bot/routes'
+import * as TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
 
 export default async (app: AppContainer) => {
+  const bots = await TgBotRepository.listForUser(app.getUser().id)
+
+  const buttons = bots.map((bot) => {
+    return [
+      {
+        text: `${bot.name} (${bot.username})`,
+        callback_data: getRouteByName('BotsEdit').path + ` -botId=${bot.id}`,
+      },
+    ]
+  })
+
   await app
     .getBot()
-    .sendMessage(app.getMessage().chat.id, 'Управления ботами', {
+    .sendMessage(app.getRequest().getChatId(), 'Управления ботами', {
       reply_markup: {
         inline_keyboard: [
+          ...buttons,
           [
             {
               text: 'Добавить бота',

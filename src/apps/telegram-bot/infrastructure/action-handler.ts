@@ -1,9 +1,5 @@
 import TelegramBot, { CallbackQuery, Message } from 'node-telegram-bot-api'
-import {
-  getRouteByName,
-  getRouteByPath,
-  tryGetRouteByPath,
-} from '~apps/telegram-bot/routes'
+import { getRouteByPath } from '~apps/telegram-bot/routes'
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import { useErrorHandler } from '~apps/telegram-bot/infrastructure/error-handler'
 import RouteNotFoundError from '~apps/telegram-bot/errors/route-not-found-error'
@@ -11,6 +7,7 @@ import { logSuccess } from '~apps/telegram-bot/infrastructure/logger'
 import WithUser from '~apps/telegram-bot/middlewares/with-user'
 import WithState from '~apps/telegram-bot/middlewares/with-state'
 import Route from '~apps/telegram-bot/interfaces/route'
+import TgRequest from '~apps/telegram-bot/infrastructure/requests/tg-request'
 
 const useAfterActionCallbacks = async (
   app: AppContainer,
@@ -32,13 +29,23 @@ const useMiddlewares = async (
 }
 
 const trySearchRoute = (app: AppContainer) => {
-  ;[trySearchRouteFromState, trySearchRouteFromHistory].forEach(
-    (trySearchMethod) => {
-      if (!app.getRoute()) {
-        trySearchMethod(app)
-      }
+  ;[
+    trySearchRouteFromRequest,
+    trySearchRouteFromState,
+    trySearchRouteFromHistory,
+  ].forEach((trySearchMethod) => {
+    if (!app.getRoute()) {
+      trySearchMethod(app)
     }
-  )
+  })
+}
+const trySearchRouteFromRequest = (app: AppContainer) => {
+  const route = app.getRequest().getRoute()
+  if (!route) {
+    return
+  }
+
+  app.setRoute(route)
 }
 
 const trySearchRouteFromHistory = (app: AppContainer) => {
@@ -70,14 +77,6 @@ const trySearchRouteFromState = (app: AppContainer) => {
 }
 
 const handleAction = async (app: AppContainer) => {
-  const message = app.getMessage()
-  if (!app.getRoute() && message.text && message.text.search(/\/.*/) === 0) {
-    const route = tryGetRouteByPath(message.text.split(' ')[0])
-    if (route) {
-      app.setRoute(route)
-    }
-  }
-
   await useMiddlewares(app, [WithUser, WithState])
 
   if (!app.getRoute()) {
@@ -106,23 +105,27 @@ export const handleText = async (
   message: Message,
   toRoute?: Route
 ) => {
-  const app = new AppContainer(bot)
+  const request = new TgRequest(message.chat.id)
+  request.setMessage(message)
+  const app = new AppContainer(bot, request)
 
-  const success = await useErrorHandler(app, async () => {
-    app.setMessage(message)
-
+  const successAction = await useErrorHandler(app, async () => {
     if (toRoute) {
       app.setRoute(toRoute)
     }
 
     await handleAction(app)
-
-    await logSuccess(app)
   })
 
-  await useErrorHandler(app, async () => {
-    await useAfterActionCallbacks(app, success)
+  const successAfterActionCallbacks = await useErrorHandler(app, async () => {
+    await useAfterActionCallbacks(app, successAction)
   })
+
+  if (successAction && successAfterActionCallbacks) {
+    await useErrorHandler(app, async () => {
+      await logSuccess(app)
+    })
+  }
 
   if (app.getRedirectRoute()) {
     await handleText(bot, message, app.getRedirectRoute())
@@ -134,37 +137,38 @@ export const handleCallbackQuery = async (
   callbackQuery: CallbackQuery,
   toRoute?: Route
 ) => {
-  const app = new AppContainer(bot)
+  if (!callbackQuery.message?.chat.id) {
+    return
+  }
 
-  const success = await useErrorHandler(app, async () => {
-    if (callbackQuery.message) {
-      app.setMessage(callbackQuery.message)
-    }
+  const request = new TgRequest(callbackQuery.message.chat.id)
+  request.setCallbackQuery(callbackQuery)
+  const app = new AppContainer(bot, request)
 
+  const successAction = await useErrorHandler(app, async () => {
     if (toRoute) {
       app.setRoute(toRoute)
     }
 
-    if (!app.getRoute() && callbackQuery.data) {
-      const route = tryGetRouteByPath(callbackQuery.data)
-      if (route) {
-        app.setRoute(route)
-      }
-    }
-
     await handleAction(app)
 
-    await bot.deleteMessage(
-      app.getMessage().chat.id,
-      app.getMessage().message_id.toString()
-    )
-
-    await logSuccess(app)
+    const message = app.getRequest().getMessage()
+    if (message) {
+      await app
+        .getBot()
+        .deleteMessage(message.chat.id, message.message_id.toString())
+    }
   })
 
-  await useErrorHandler(app, async () => {
-    await useAfterActionCallbacks(app, success)
+  const successAfterActionCallbacks = await useErrorHandler(app, async () => {
+    await useAfterActionCallbacks(app, successAction)
   })
+
+  if (successAction && successAfterActionCallbacks) {
+    await useErrorHandler(app, async () => {
+      await logSuccess(app)
+    })
+  }
 
   if (app.getRedirectRoute()) {
     await handleCallbackQuery(bot, callbackQuery, app.getRedirectRoute())

@@ -2,7 +2,10 @@ import DB from '~apps/shared/infrastructure/database'
 import UpdateOrCreateParams from '~apps/shared/interfaces/services/tg-bot/update-or-create-params'
 import * as TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
 import TgBot from '~apps/shared/interfaces/tg-bot'
-import { timestampsOnUpdate } from '~apps/shared/infrastructure/entity-properties'
+import {
+  timestampsOnDelete,
+  timestampsOnUpdate,
+} from '~apps/shared/infrastructure/entity-properties'
 
 export const updateOrCreate = async (params: UpdateOrCreateParams) => {
   let tgBot = await TgBotRepository.find({
@@ -29,4 +32,15 @@ export const updateOrCreate = async (params: UpdateOrCreateParams) => {
   }
 
   return tgBot
+}
+
+export const deleteBot = (tgBot: TgBot) => {
+  return DB<TgBot>('tg_bots')
+    .where('id', tgBot.id)
+    .update(
+      {
+        ...timestampsOnDelete(),
+      },
+      ['*']
+    )
 }

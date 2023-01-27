@@ -10,7 +10,7 @@ const throwIncorrectBotApiKey = (app: AppContainer) => {
 }
 
 export default async (app: AppContainer) => {
-  const messageText = app.getMessage().text
+  const messageText = app.getRequest().getMessageOrError().text
   if (!messageText) {
     throwIncorrectBotApiKey(app)
     return

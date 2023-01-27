@@ -1,20 +1,20 @@
 import * as crypto from 'crypto'
-import TelegramBot, { Message } from 'node-telegram-bot-api'
+import TelegramBot from 'node-telegram-bot-api'
 import User from '~apps/shared/interfaces/user'
 import UserNotSetError from '~apps/telegram-bot/errors/user-not-set-error'
-import MessageNotSetError from '~apps/telegram-bot/errors/message-not-set-error'
 import RouteNotSetError from '~apps/telegram-bot/errors/route-not-set-error'
 import State from '~apps/telegram-bot/infrastructure/state'
 import StateNotSetError from '~apps/telegram-bot/errors/state-not-set-error'
 import Route from '~apps/telegram-bot/interfaces/route'
 import RedirectRouteAlreadyExists from '~apps/telegram-bot/errors/redirect-route-already-exists'
 import AfterActionHook from '~apps/telegram-bot/interfaces/after-action-hook'
+import TgRequest from '~apps/telegram-bot/infrastructure/requests/tg-request'
 
 export default class AppContainer {
   protected appKey: string
   protected bot: TelegramBot
+  protected request: TgRequest
 
-  protected message?: Message
   protected user?: User
   protected route?: Route
   protected state?: State
@@ -23,9 +23,10 @@ export default class AppContainer {
 
   protected afterActionHooks: AfterActionHook[]
 
-  constructor(bot: TelegramBot) {
+  constructor(bot: TelegramBot, request: TgRequest) {
     this.appKey = crypto.randomUUID()
     this.bot = bot
+    this.request = request
     this.afterActionHooks = []
   }
 
@@ -37,17 +38,8 @@ export default class AppContainer {
     return this.bot
   }
 
-  public setMessage(message: Message): AppContainer {
-    this.message = message
-    return this
-  }
-
-  public getMessage(): Message {
-    if (!this.message) {
-      throw MessageNotSetError
-    }
-
-    return this.message
+  public getRequest(): TgRequest {
+    return this.request
   }
 
   public setUser(user: User): AppContainer {
