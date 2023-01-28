@@ -8,6 +8,7 @@ import WithUser from '~apps/telegram-bot/middlewares/with-user'
 import WithState from '~apps/telegram-bot/middlewares/with-state'
 import Route from '~apps/telegram-bot/interfaces/route'
 import TgRequest from '~apps/telegram-bot/infrastructure/requests/tg-request'
+import { getMe } from '~apps/telegram-bot/utils/tg-bot'
 
 const useAfterActionCallbacks = async (
   app: AppContainer,
@@ -102,12 +103,18 @@ const handleAction = async (app: AppContainer) => {
 
 export const handleText = async (
   bot: TelegramBot,
+  botKeyCache: string,
   message: Message,
   toRoute?: Route
 ) => {
+  const botInfo = await getMe(botKeyCache, bot)
+  if (botInfo.id === message.from?.id) {
+    return
+  }
+
   const request = new TgRequest(message.chat.id)
   request.setMessage(message)
-  const app = new AppContainer(bot, request)
+  const app = new AppContainer(bot, botInfo, request)
 
   const successAction = await useErrorHandler(app, async () => {
     if (toRoute) {
@@ -128,22 +135,24 @@ export const handleText = async (
   }
 
   if (app.getRedirectRoute()) {
-    await handleText(bot, message, app.getRedirectRoute())
+    await handleText(bot, botKeyCache, message, app.getRedirectRoute())
   }
 }
 
 export const handleCallbackQuery = async (
   bot: TelegramBot,
+  botKeyCache: string,
   callbackQuery: CallbackQuery,
   toRoute?: Route
 ) => {
   if (!callbackQuery.message?.chat.id) {
     return
   }
+  const botInfo = await getMe(botKeyCache, bot)
 
   const request = new TgRequest(callbackQuery.message.chat.id)
   request.setCallbackQuery(callbackQuery)
-  const app = new AppContainer(bot, request)
+  const app = new AppContainer(bot, botInfo, request)
 
   const successAction = await useErrorHandler(app, async () => {
     if (toRoute) {
@@ -171,6 +180,11 @@ export const handleCallbackQuery = async (
   }
 
   if (app.getRedirectRoute()) {
-    await handleCallbackQuery(bot, callbackQuery, app.getRedirectRoute())
+    await handleCallbackQuery(
+      bot,
+      botKeyCache,
+      callbackQuery,
+      app.getRedirectRoute()
+    )
   }
 }

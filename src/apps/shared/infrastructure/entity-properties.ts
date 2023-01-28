@@ -1,4 +1,5 @@
 import { getCurrentTimestamp } from '~apps/shared/infrastructure/date'
+import BaseEntity from '~apps/shared/interfaces/entities/base-entity'
 
 export const timestampsOnCreate = () => {
   return {

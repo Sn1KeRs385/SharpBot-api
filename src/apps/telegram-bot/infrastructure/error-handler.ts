@@ -14,7 +14,7 @@ export const handleError = async (app: AppContainer, error: Error) => {
     await undefineError.sendMessageToUser(app)
   }
 
-  if (!app.getRedirectRoute()) {
+  if (!app.getRedirectRoute() && app.getRoute()?.name !== 'InitStart') {
     app.setRedirectRoute(getRouteByName('InitStart'))
   }
 }

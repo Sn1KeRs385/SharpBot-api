@@ -1,6 +1,5 @@
 import * as crypto from 'crypto'
 import TelegramBot from 'node-telegram-bot-api'
-import User from '~apps/shared/interfaces/user'
 import UserNotSetError from '~apps/telegram-bot/errors/user-not-set-error'
 import RouteNotSetError from '~apps/telegram-bot/errors/route-not-set-error'
 import State from '~apps/telegram-bot/infrastructure/state'
@@ -9,10 +8,12 @@ import Route from '~apps/telegram-bot/interfaces/route'
 import RedirectRouteAlreadyExists from '~apps/telegram-bot/errors/redirect-route-already-exists'
 import AfterActionHook from '~apps/telegram-bot/interfaces/after-action-hook'
 import TgRequest from '~apps/telegram-bot/infrastructure/requests/tg-request'
+import User from '~apps/shared/interfaces/entities/user'
 
 export default class AppContainer {
   protected appKey: string
   protected bot: TelegramBot
+  protected botInfo: TelegramBot.User
   protected request: TgRequest
 
   protected user?: User
@@ -23,9 +24,10 @@ export default class AppContainer {
 
   protected afterActionHooks: AfterActionHook[]
 
-  constructor(bot: TelegramBot, request: TgRequest) {
+  constructor(bot: TelegramBot, botInfo: TelegramBot.User, request: TgRequest) {
     this.appKey = crypto.randomUUID()
     this.bot = bot
+    this.botInfo = botInfo
     this.request = request
     this.afterActionHooks = []
   }
@@ -36,6 +38,10 @@ export default class AppContainer {
 
   public getBot(): TelegramBot {
     return this.bot
+  }
+
+  public getBotInfo(): TelegramBot.User {
+    return this.botInfo
   }
 
   public getRequest(): TgRequest {

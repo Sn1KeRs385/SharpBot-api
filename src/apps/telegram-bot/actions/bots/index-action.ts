@@ -1,9 +1,9 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import { getRouteByName } from '~apps/telegram-bot/routes'
-import * as TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
+import TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
 
 export default async (app: AppContainer) => {
-  const bots = await TgBotRepository.listForUser(app.getUser().id)
+  const bots = await TgBotRepository.getList({ user_id: app.getUser().id })
 
   const buttons = bots.map((bot) => {
     return [

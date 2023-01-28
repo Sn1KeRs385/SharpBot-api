@@ -1,6 +1,6 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import { getRouteByName } from '~apps/telegram-bot/routes'
-import * as TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
+import TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
 
 const getBotId = (app: AppContainer): number => {
   const botId = app.getRequest().getParam('botId')
@@ -13,7 +13,7 @@ const getBotId = (app: AppContainer): number => {
 }
 
 export default async (app: AppContainer) => {
-  const bot = await TgBotRepository.findOrFail({
+  const bot = await TgBotRepository.firstOrFail({
     id: getBotId(app),
     user_id: app.getUser().id,
   })

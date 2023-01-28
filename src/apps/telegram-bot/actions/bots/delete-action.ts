@@ -1,7 +1,6 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import { getRouteByName } from '~apps/telegram-bot/routes'
-import * as TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
-import * as TgBotService from '~apps/shared/services/tg-bot-service'
+import TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
 
 const getBotId = (app: AppContainer): number => {
   const botId = app.getRequest().getParam('botId')
@@ -13,11 +12,9 @@ const getBotId = (app: AppContainer): number => {
   return parseInt(botId.toString())
 }
 export default async (app: AppContainer) => {
-  const bot = await TgBotRepository.findOrFail({
-    id: getBotId(app),
-  })
+  const bot = await TgBotRepository.firstOrFail({ id: getBotId(app) })
 
-  await TgBotService.deleteBot(bot)
+  await TgBotRepository.remove(bot)
 
   app.setRedirectRoute(getRouteByName('BotsIndex'))
 }

@@ -1,10 +1,15 @@
-import UserIdentifier from '~apps/shared/enums/user-identifier'
+import UserIdentifierType from '~apps/shared/enums/user-identifier-type'
 import DB from '~apps/shared/infrastructure/database'
-import * as UserRepository from '~apps/shared/repositories/user-repository'
-import User from '~apps/shared/interfaces/user'
-import UserIdentifierSearch from '~apps/shared/interfaces/user-identifier-search'
+import User from '~apps/shared/interfaces/entities/user'
+import UserIdentifierEntity from '~apps/shared/interfaces/entities/user-identifier'
+import UserRepository from '~apps/shared/repositories/user-repository'
+import UserIdentifierSearch from '~apps/shared/interfaces/repositories/user-identifier-search'
+import UserIdentifierRepository from '~apps/shared/repositories/user-identifier-repository'
 
-export const firstOrCreate = async (type: UserIdentifier, value: string) => {
+export const firstOrCreateByIdentifier = async (
+  type: UserIdentifierType,
+  value: string
+) => {
   let user = await UserRepository.findByIdentifier(type, value)
 
   if (!user) {
@@ -26,28 +31,46 @@ export const searchAndSyncByIdentifiers = async (
 
   let user: User
   if (users.length > 0) {
-    user = users[0]
+    user = users[0] as User
   } else {
-    user = (await DB<User>('users').insert({}, ['*']))[0]
+    user = await UserRepository.create({})
   }
 
-  await Promise.all(
-    userIdentifiers
-      .filter((userIdentifier) => {
-        return !users.find(
-          (userFind) =>
-            userFind.identifier_type === userIdentifier.type &&
-            userFind.identifier_value === userIdentifier.value
-        )
-      })
-      .map(async (userIdentifier) => {
-        await DB('user_identifiers').insert({
+  const paramsArray = userIdentifiers
+    .filter((userIdentifier) => {
+      return !users.find(
+        (userFind) =>
+          userFind.identifier_type === userIdentifier.type &&
+          userFind.identifier_value === userIdentifier.value
+      )
+    })
+    .map(
+      (userIdentifier) =>
+        ({
           user_id: user.id,
           type: userIdentifier.type,
           value: userIdentifier.value,
-        })
-      })
-  )
+        } as Partial<UserIdentifierEntity>)
+    )
+  await UserIdentifierRepository.createMany(paramsArray)
+
+  // await Promise.all(
+  //   userIdentifiers
+  //     .filter((userIdentifier) => {
+  //       return !users.find(
+  //         (userFind) =>
+  //           userFind.identifier_type === userIdentifier.type &&
+  //           userFind.identifier_value === userIdentifier.value
+  //       )
+  //     })
+  //     .map(async (userIdentifier) => {
+  //       await UserIdentifierRepository.create({
+  //         user_id: user.id,
+  //         type: userIdentifier.type,
+  //         value: userIdentifier.value,
+  //       })
+  //     })
+  // )
 
   return user
 }

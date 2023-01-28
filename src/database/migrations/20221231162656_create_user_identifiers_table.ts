@@ -1,5 +1,5 @@
 import { Knex } from 'knex'
-import UserIdentifier from '~apps/shared/enums/user-identifier'
+import UserIdentifierType from '~apps/shared/enums/user-identifier-type'
 import WithTimestamps from '~database/migrations/helpers/with-timestamps'
 import SoftDelete from '~database/migrations/helpers/soft-delete'
 import WithId from '~database/migrations/helpers/with-id'
@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     .createTable('user_identifiers', (table) => {
       WithId(table)
       table.bigint('user_id').unsigned().notNullable()
-      table.enu('type', Object.values(UserIdentifier)).notNullable()
+      table.enu('type', Object.values(UserIdentifierType)).notNullable()
       table.string('value').notNullable()
       WithTimestamps(table)
       SoftDelete(table)

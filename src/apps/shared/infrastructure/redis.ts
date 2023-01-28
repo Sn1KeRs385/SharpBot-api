@@ -1,5 +1,6 @@
 import { createClient } from 'redis'
 import redisConfig from '~config/redis'
+import { RedisJSON } from '@redis/json/dist/commands'
 
 const client = createClient({
   socket: {
@@ -14,15 +15,32 @@ const openConnect = async () => {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const set = async (key: string, value: string) => {
+export const set = async (key: string, value: unknown, seconds = 0) => {
   await openConnect()
-  await client.set(key, value)
-  // await client.disconnect()
+  const data = JSON.stringify({ redisData: value })
+  if (seconds > 0) {
+    await client.setEx(key, seconds, data)
+  } else {
+    await client.set(key, data)
+  }
 }
 
 export const get = async (key: string) => {
   await openConnect()
-  return await client.get(key)
-  // await client.disconnect()
+  const data = await client.get(key)
+  if (data) {
+    return JSON.parse(data).redisData
+  }
+  return data
+}
+
+export const remember = async (key: string, seconds: number, fn: () => any) => {
+  let data = await get(key)
+  if (!data) {
+    data = await fn()
+    if (data) {
+      await set(key, data, seconds)
+    }
+  }
+  return data
 }
