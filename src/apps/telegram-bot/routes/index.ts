@@ -1,3 +1,4 @@
+import BotFatherRoutes from '~apps/telegram-bot/routes/bot-father'
 import BotsRoutes from '~apps/telegram-bot/routes/bots'
 import InitRoutes from '~apps/telegram-bot/routes/init'
 import RoutesObject from '~apps/telegram-bot/interfaces/routes-object'
@@ -10,7 +11,7 @@ const routesWithKeyName: RoutesObject = {}
 const routesWithKeyPath: RoutesObject = {}
 
 export const initRoutes = (): void => {
-  ;[InitRoutes, BotsRoutes].forEach((routesTemp) => {
+  ;[BotFatherRoutes, InitRoutes, BotsRoutes].forEach((routesTemp) => {
     routesTemp.forEach((routeTemp) => {
       if (routesWithKeyName[routeTemp.name]) {
         throw new RouteNameDuplicationError(routeTemp.name)

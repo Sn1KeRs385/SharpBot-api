@@ -1,6 +1,6 @@
 import ApiData from '~apps/shared/interfaces/api-data'
 import { CallbackQuery, Message } from 'node-telegram-bot-api'
-import { tryGetRouteByPath } from '~apps/telegram-bot/routes'
+import { tryGetRouteByName, tryGetRouteByPath } from '~apps/telegram-bot/routes'
 import Route from '~apps/telegram-bot/interfaces/route'
 import MessageNotSetError from '~apps/telegram-bot/errors/message-not-set-error'
 
@@ -68,6 +68,10 @@ export default class TgRequest {
 
     if (splitText.length === 0) {
       return
+    }
+
+    if (this.message?.forward_from?.username === 'BotFather') {
+      this.route = tryGetRouteByName('ForwardFromBotFatherAction')
     }
 
     if (!this.route && splitText[0].search(/\/.*/) === 0) {

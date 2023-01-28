@@ -2,7 +2,6 @@ import * as UserService from '~apps/shared/services/user-service'
 import UserIdentifierType from '~apps/shared/enums/user-identifier-type'
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
 import UserIdentifierSearch from '~apps/shared/interfaces/repositories/user-identifier-search'
-import { getMe } from '~apps/telegram-bot/utils/tg-bot'
 
 export default async (app: AppContainer) => {
   const message = app.getRequest().getMessage()

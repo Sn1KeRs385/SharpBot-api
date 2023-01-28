@@ -1,7 +1,7 @@
 import UserIdentifierType from '~apps/shared/enums/user-identifier-type'
 import DB from '~apps/shared/infrastructure/database'
 import User from '~apps/shared/interfaces/entities/user'
-import UserIdentifierEntity from '~apps/shared/interfaces/entities/user-identifier'
+import UserIdentifier from '~apps/shared/interfaces/entities/user-identifier'
 import UserRepository from '~apps/shared/repositories/user-repository'
 import UserIdentifierSearch from '~apps/shared/interfaces/repositories/user-identifier-search'
 import UserIdentifierRepository from '~apps/shared/repositories/user-identifier-repository'
@@ -50,27 +50,12 @@ export const searchAndSyncByIdentifiers = async (
           user_id: user.id,
           type: userIdentifier.type,
           value: userIdentifier.value,
-        } as Partial<UserIdentifierEntity>)
+        } as Partial<UserIdentifier>)
     )
-  await UserIdentifierRepository.createMany(paramsArray)
 
-  // await Promise.all(
-  //   userIdentifiers
-  //     .filter((userIdentifier) => {
-  //       return !users.find(
-  //         (userFind) =>
-  //           userFind.identifier_type === userIdentifier.type &&
-  //           userFind.identifier_value === userIdentifier.value
-  //       )
-  //     })
-  //     .map(async (userIdentifier) => {
-  //       await UserIdentifierRepository.create({
-  //         user_id: user.id,
-  //         type: userIdentifier.type,
-  //         value: userIdentifier.value,
-  //       })
-  //     })
-  // )
+  if (paramsArray.length > 0) {
+    await UserIdentifierRepository.createMany(paramsArray)
+  }
 
   return user
 }
