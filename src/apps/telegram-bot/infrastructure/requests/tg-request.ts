@@ -86,6 +86,11 @@ export default class TgRequest {
       this.route = tryGetRouteByPath(splitText[0])
     }
 
+    if (!this.route && splitText[0].search(/https:\/\/t\.me\/.+/) === 0) {
+      this.route = tryGetRouteByName('ChannelsAddChannelByInviteLink')
+      this.params['link'] = splitText[0]
+    }
+
     splitText.forEach((textTemp) => {
       if (/^-[A-z0-9]+=/.test(textTemp)) {
         const values = textTemp.split('=')

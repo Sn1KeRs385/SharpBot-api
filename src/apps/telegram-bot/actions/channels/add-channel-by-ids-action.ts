@@ -1,10 +1,4 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
-import { getRouteByName } from '~apps/telegram-bot/routes'
-import boolParse from '~apps/shared/utils/bool-parse'
-import ChannelRepository from '~apps/shared/repositories/channel-repository'
-import ChannelType from '~apps/shared/enums/channel-type'
-import TgBotRepository from '~apps/shared/repositories/tg-bot-repository'
-import TelegramBot from 'node-telegram-bot-api'
 import { addChannel } from '~apps/telegram-bot/services/channel-service'
 
 const getId = (app: AppContainer, key: string): number => {

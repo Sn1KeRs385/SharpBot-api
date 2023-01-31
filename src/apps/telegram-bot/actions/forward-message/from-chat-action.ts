@@ -72,6 +72,7 @@ export default async (app: AppContainer) => {
       type: ChannelType.TG_CHAT,
       identifier: chatId.toString(),
       bot_id: botsFind[0].id,
+      title: chatName,
     })
     await app
       .getBot()

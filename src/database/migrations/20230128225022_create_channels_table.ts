@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('channels', (table) => {
     WithId(table)
     table.bigint('user_id').unsigned().notNullable()
+    table.string('title').notNullable()
     table.enu('type', Object.values(ChannelType)).notNullable()
     table.string('identifier').notNullable()
     table.bigint('bot_id').notNullable()

@@ -29,11 +29,14 @@ export const addChannel = async (
     throw new BotHasNotPermissionError()
   }
 
+  const chatInfo = await tgBot.getChat(chatId)
+
   await ChannelRepository.create({
     user_id: userId,
     type: ChannelType.TG_CHAT,
     identifier: chatId.toString(),
     bot_id: bot.id,
+    title: chatInfo.title,
   })
 
   return {
