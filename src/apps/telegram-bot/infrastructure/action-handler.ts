@@ -163,9 +163,13 @@ export const handleCallbackQuery = async (
 
     const message = app.getRequest().getMessage()
     if (message) {
-      await app
-        .getBot()
-        .deleteMessage(message.chat.id, message.message_id.toString())
+      try {
+        await app
+          .getBot()
+          .deleteMessage(message.chat.id, message.message_id.toString())
+      } catch (er) {
+        /* empty */
+      }
     }
   })
 

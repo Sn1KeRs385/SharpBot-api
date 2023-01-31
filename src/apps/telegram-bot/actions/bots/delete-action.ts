@@ -12,7 +12,10 @@ const getBotId = (app: AppContainer): number => {
   return parseInt(botId.toString())
 }
 export default async (app: AppContainer) => {
-  const bot = await TgBotRepository.firstOrFail({ id: getBotId(app) })
+  const bot = await TgBotRepository.firstOrFail({
+    id: getBotId(app),
+    user_id: app.getUser().id,
+  })
 
   await TgBotRepository.remove(bot)
 

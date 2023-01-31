@@ -61,13 +61,13 @@ export default abstract class BaseRepository<
   public async firstOrFail(
     params: Partial<Entity> = {},
     withTrashed = false
-  ): Promise<TgBot> {
+  ): Promise<Entity> {
     return this.first(params, withTrashed).then((result) => {
       if (!result) {
         throw new EntityNotFoundError(this.table, params)
       }
       return result
-    }) as Promise<TgBot>
+    }) as Promise<Entity>
   }
 
   public getList(params: Partial<Entity> = {}, withTrashed = false) {

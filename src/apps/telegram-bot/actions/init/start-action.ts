@@ -1,4 +1,5 @@
 import AppContainer from '~apps/telegram-bot/infrastructure/app-container'
+import { getRouteByName } from '~apps/telegram-bot/routes'
 
 export default async (app: AppContainer) => {
   await app
@@ -9,7 +10,11 @@ export default async (app: AppContainer) => {
           [
             {
               text: 'Управления ботами',
-              callback_data: '/bots',
+              callback_data: getRouteByName('BotsIndex').path,
+            },
+            {
+              text: 'Управления Каналами',
+              callback_data: getRouteByName('ChannelsIndex').path,
             },
           ],
         ],
