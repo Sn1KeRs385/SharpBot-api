@@ -3,9 +3,10 @@ import { CallbackQuery, Message } from 'node-telegram-bot-api'
 import { tryGetRouteByName, tryGetRouteByPath } from '~apps/telegram-bot/routes'
 import Route from '~apps/telegram-bot/interfaces/route'
 import MessageNotSetError from '~apps/telegram-bot/errors/message-not-set-error'
+import AnyType from '~apps/shared/interfaces/any-type'
 
 export default class TgRequest {
-  protected params: ApiData = {}
+  protected params: { [key: string]: string } = {}
   protected chatId: number
   protected route?: Route
   protected message?: Message
@@ -25,6 +26,9 @@ export default class TgRequest {
       throw MessageNotSetError
     }
     return this.message
+  }
+  public getCallbackQuery(): CallbackQuery | undefined {
+    return this.callbackQuery
   }
   public getRoute(): Route | undefined {
     return this.route
@@ -71,7 +75,11 @@ export default class TgRequest {
     }
 
     if (this.message?.forward_from?.username === 'BotFather') {
-      this.route = tryGetRouteByName('ForwardFromBotFatherAction')
+      this.route = tryGetRouteByName('ForwardMessageFromBotFather')
+    }
+
+    if (this.message?.forward_from_chat) {
+      this.route = tryGetRouteByName('ForwardMessageFromChat')
     }
 
     if (!this.route && splitText[0].search(/\/.*/) === 0) {

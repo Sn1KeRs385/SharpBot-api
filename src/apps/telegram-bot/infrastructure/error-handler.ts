@@ -3,9 +3,13 @@ import { logError } from '~apps/telegram-bot/infrastructure/logger'
 import UndefinedError from '~apps/telegram-bot/errors/undefined-error'
 import BaseTelegramBotError from '~apps/telegram-bot/errors/base-telegram-bot-error'
 import { getRouteByName } from '~apps/telegram-bot/routes'
+import BoolParse from '~apps/shared/utils/bool-parse'
 
 export const handleError = async (app: AppContainer, error: Error) => {
   await logError(app, error)
+  if (BoolParse(app.getRequest().getParam('noError'))) {
+    return
+  }
 
   if (error instanceof BaseTelegramBotError) {
     await error.sendMessageToUser(app)

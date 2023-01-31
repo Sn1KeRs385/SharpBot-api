@@ -1,13 +1,5 @@
+import AnyType from '~apps/shared/interfaces/any-type'
+
 export default interface ApiData {
-  [key: string]:
-    | string
-    | number
-    | boolean
-    | string[]
-    | number[]
-    | boolean[]
-    | ApiData
-    | ApiData[]
-    | null
-    | undefined
+  [key: string]: AnyType | AnyType[] | ApiData
 }
